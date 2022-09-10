@@ -1,10 +1,11 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, ScrollView } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { createServer } from "miragejs"
 
 import Header from './components/Header';
 import Main from './components/Main'
+import Navigation from './components/Navigation';
 
 if (window.server) {
   server.shutdown()
@@ -55,7 +56,10 @@ const App = () => {
   return (
     <View style={styles.container}>
       <Header usersApi={user}/>
-      <Main usersApi={user}/>
+      <View style={styles.containerMain}>
+        <Main usersApi={user}/>
+      </View>
+      <Navigation/>
       <StatusBar style="light" />
     </View>
   );
@@ -63,8 +67,11 @@ const App = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     backgroundColor: '#D9D9D9',
+    height: '100%'
+  },
+  containerMain: {
+    flex: 2,
   }
 });
 

@@ -1,9 +1,8 @@
 import React from 'react';
-import { View, Text, StyleSheet, TextInput, Pressable, TouchableWithoutFeedback, TouchableOpacity} from 'react-native';
+import { View, Text, StyleSheet, TextInput, Pressable, TouchableWithoutFeedback} from 'react-native';
 import Svg, { Path } from "react-native-svg"
 import Ionicons from '@expo/vector-icons/Ionicons';
 import QRCode from 'react-native-qrcode-svg';
-import { BlurView } from 'expo-blur';
 
 const Main = (props) => {
     const [transferValue, setTransferValue] = React.useState([])
