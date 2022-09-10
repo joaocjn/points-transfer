@@ -9,13 +9,31 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^6.2.0",
+    "@fortawesome/free-brands-svg-icons": "^6.2.0",
+    "@fortawesome/free-regular-svg-icons": "^6.2.0",
+    "@fortawesome/free-solid-svg-icons": "^6.2.0",
+    "@fortawesome/react-native-fontawesome": "^0.3.0",
+    "@fortawesome/sharp-solid-svg-icons": "^6.2.0",
+    "@react-navigation/drawer": "^6.4.4",
+    "@react-navigation/native": "^6.0.12",
     "expo": "~46.0.9",
+    "expo-blur": "~11.2.0",
     "expo-status-bar": "~1.4.0",
+    "expo-updates": "~0.14.5",
     "react": "18.0.0",
-    "react-native": "0.69.5"
+    "react-native": "0.69.5",
+    "react-native-fontawesome": "^7.0.0",
+    "react-native-qrcode-svg": "^6.1.2",
+    "react-native-safe-area-view": "^1.1.1",
+    "react-native-svg": "12.3.0",
+    "react-native-vector-icons": "^9.2.0",
+    "styled-components": "^5.3.5",
+    "yarn": "^1.22.19"
   },
   "devDependencies": {
-    "@babel/core": "^7.12.9"
+    "@babel/core": "^7.12.9",
+    "miragejs": "^0.1.45"
   },
   "private": true
 }
