@@ -1,7 +1,9 @@
 import React from 'react';
-import { StyleSheet, View, ScrollView } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { createServer } from "miragejs"
+import 'intl';
+import 'intl/locale-data/jsonp/pt-BR';
 
 import Header from './components/Header';
 import Main from './components/Main'
@@ -56,9 +58,7 @@ const App = () => {
   return (
     <View style={styles.container}>
       <Header usersApi={user}/>
-      <View style={styles.containerMain}>
-        <Main usersApi={user}/>
-      </View>
+      <Main usersApi={user}/>
       <Navigation/>
       <StatusBar style="light" />
     </View>
@@ -68,10 +68,7 @@ const App = () => {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#D9D9D9',
-    height: '100%'
-  },
-  containerMain: {
-    flex: 2,
+    height: '100%',
   }
 });
 

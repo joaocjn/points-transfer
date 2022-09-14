@@ -1,17 +1,32 @@
 import React from 'react';
 import { View, Text, StyleSheet, TextInput, Pressable, TouchableWithoutFeedback} from 'react-native';
 import Svg, { Path } from "react-native-svg"
-import Ionicons from '@expo/vector-icons/Ionicons';
 import QRCode from 'react-native-qrcode-svg';
+import Ionicons from '@expo/vector-icons/Ionicons';
+
 
 const Main = (props) => {
     const [transferValue, setTransferValue] = React.useState([])
     const [transferUser, setTransferUser] = React.useState([])
     const [qrCodeDisplay, setQrCodeDisplay] = React.useState(false)
-
+    
+    const handleTransferValue = (value) => {
+        const onlyNumber = value.toString().replace(/\D+/g, '')
+        props.usersApi.map(user => {
+            if(onlyNumber > user.saldo){
+                return
+            }
+            setTransferValue(onlyNumber)
+        })
+    }
+    const handleTransferUser = (value) => {
+        const onlyNumber = value.toString().replace(/\D+/g, '')
+        setTransferUser(onlyNumber)
+    }
     const handleQrCodeDisplay = () => {
         qrCodeDisplay ? setQrCodeDisplay(false) : setQrCodeDisplay(true)
     }
+
     return (
         <View style={styles.main}>
             {props.usersApi.map(user => {
@@ -29,7 +44,7 @@ const Main = (props) => {
                                 <Path d="M27 17.5V28.6364L21.9375 30.2273L16.875 22.7977C16.3856 22.0977 15.1875 22.4955 15.3225 23.3386L16.875 35L0 27.0455L1.62 18.6932C2.6325 13.3955 7.52625 9.54545 13.23 9.54545H15.1875L25.3125 0L21.9375 9.54545H27L24.3337 13.3159C25.92 14.1273 27 15.6864 27 17.5Z" fill="#4B4B4C"/>
                             </Svg>
                             <Text style={styles.mainBalanceValue}> 
-                                {user.saldo.toLocaleString()}
+                                {user.saldo.toLocaleString('pt-BR')}
                             </Text>
                         </View>
                     </View>
@@ -50,15 +65,11 @@ const Main = (props) => {
                     </Svg>
                     <TextInput
                         style={styles.mainTransferValueInput}
-                        onChangeText={setTransferValue}
-                        pattern={[
-                            '/[^0-9]/g', // min 8 chars
-                            '(?=.*\\d)', // number required
-                            '(?=.*[A-Z])', // uppercase letter
-                          ]}
+                        onChangeText={handleTransferValue}
                         value={transferValue}
                         keyboardType='number-pad'
                         selectionColor='#4B4B4C'
+                        
                     />
                 </View>
                 
@@ -71,8 +82,9 @@ const Main = (props) => {
                 <View style={styles.mainInputBottom}>
                     <TextInput
                         style={styles.mainTransferUserInput}
-                        onChangeText={setTransferUser}
+                        onChangeText={handleTransferUser}
                         value={transferUser}
+                        maxLength={7}
                         keyboardType='number-pad'
                         selectionColor='#4B4B4C'
                     />

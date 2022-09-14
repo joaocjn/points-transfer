@@ -78,7 +78,8 @@ const styles = StyleSheet.create({
       backgroundColor: '#FFFFFF',
       paddingTop: 15,
       paddingBottom: 25,
-      paddingHorizontal: 30
+      paddingHorizontal: 30,
+      marginTop: 'auto'
     },
     navigationBox:{
         display: 'flex',
