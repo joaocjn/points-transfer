@@ -4,11 +4,19 @@ import Svg, { Path } from "react-native-svg"
 import QRCode from 'react-native-qrcode-svg';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
+<<<<<<< HEAD
+=======
+import TransferPreview from './TransferPreview';
+>>>>>>> b5cd4b3 (Overview screen - points transfer)
 
 const Main = (props) => {
     const [transferValue, setTransferValue] = React.useState([])
     const [transferUser, setTransferUser] = React.useState([])
     const [qrCodeDisplay, setQrCodeDisplay] = React.useState(false)
+<<<<<<< HEAD
+=======
+    const [buttonNext, setButtonNext] = React.useState(true)
+>>>>>>> b5cd4b3 (Overview screen - points transfer)
     
     const handleTransferValue = (value) => {
         const onlyNumber = value.toString().replace(/\D+/g, '')
@@ -27,6 +35,14 @@ const Main = (props) => {
         qrCodeDisplay ? setQrCodeDisplay(false) : setQrCodeDisplay(true)
     }
 
+<<<<<<< HEAD
+=======
+    const handleEnableButtonNext = transferValue !== '' && transferUser.length === 7 ? false : true
+    const handleButtonNext = () => {
+        buttonNext ? setButtonNext(false) : setButtonNext(true)
+    }
+
+>>>>>>> b5cd4b3 (Overview screen - points transfer)
     return (
         <View style={styles.main}>
             {props.usersApi.map(user => {
@@ -50,6 +66,10 @@ const Main = (props) => {
                     </View>
                 )
             })}
+<<<<<<< HEAD
+=======
+            {buttonNext ?
+>>>>>>> b5cd4b3 (Overview screen - points transfer)
             <View style={styles.mainBottom}>
                 <Text style={styles.mainTransferText}>
                     Qual é o valor da transferência?
@@ -107,10 +127,30 @@ const Main = (props) => {
                         logoBackgroundColor="yellow" 
                     /> 
                 </View> : null}
+<<<<<<< HEAD
                 <Pressable style={styles.mainTransferButton}>
                     <Text style={styles.mainTransferButtonText}>Próximo</Text>
                 </Pressable>
             </View>
+=======
+                <Pressable 
+                    style={styles.mainTransferButton} 
+                    onPress={()=>handleButtonNext()}
+                    disabled={handleEnableButtonNext}
+                >
+                    <Text style={[styles.mainTransferButtonText, {
+                        backgroundColor: handleEnableButtonNext ? '#7E7E7E' : '#212B4F'
+                    }]}>Próximo</Text>
+                </Pressable>
+            </View> 
+            : 
+            <TransferPreview 
+                visible={handleButtonNext}
+                usersApi={props.usersApi} 
+                transferValue={transferValue}
+                transferUser={transferUser}
+            />}
+>>>>>>> b5cd4b3 (Overview screen - points transfer)
         </View>
     )
 }
@@ -146,7 +186,11 @@ const styles = StyleSheet.create({
         margin: 20,
         marginTop: 0,
         padding: 20,
+<<<<<<< HEAD
         borderRadius: 10
+=======
+        borderRadius: 10,
+>>>>>>> b5cd4b3 (Overview screen - points transfer)
     },
     mainTransferText:{
         fontSize: 18,
@@ -216,9 +260,15 @@ const styles = StyleSheet.create({
         marginTop: 20,
     },
     mainTransferButtonText:{
+<<<<<<< HEAD
         backgroundColor: '#212B4F',
         color: '#FFFFFF',
         paddingHorizontal: 25,
+=======
+        color: '#FFFFFF',
+        width: 100,
+        textAlign: 'center',
+>>>>>>> b5cd4b3 (Overview screen - points transfer)
         paddingVertical: 5,
         borderRadius: 5,
         fontSize: 12,
