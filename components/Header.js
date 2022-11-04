@@ -1,25 +1,14 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image} from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableWithoutFeedback  } from 'react-native';
 import Svg, { Path } from "react-native-svg"
-import Ionicons from '@expo/vector-icons/Ionicons';
 
 const Header = (props) => {
+  const user = props.userApi
+
   return (
     <View style={styles.header}>
-      <View style={styles.headerTop}>
-        <Ionicons name="menu-outline" size={35} color="white" />
-        <Svg
-          width={25}
-          height={24}
-          viewBox="0 0 25 24"
-        >
-          <Path d="M18.871 8C18.871 6.4087 18.2355 4.88258 17.1043 3.75736C15.9731 2.63214 14.4388 2 12.839 2C11.2392 2 9.70497 2.63214 8.57375 3.75736C7.44253 4.88258 6.80702 6.4087 6.80702 8C6.80702 15 3.79102 17 3.79102 17H21.887C21.887 17 18.871 15 18.871 8Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-          <Path d="M14.579 21C14.4023 21.3031 14.1486 21.5547 13.8434 21.7295C13.5381 21.9044 13.1921 21.9965 12.8398 21.9965C12.4876 21.9965 12.1415 21.9044 11.8363 21.7295C11.531 21.5547 11.2773 21.3031 11.1006 21" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-        </Svg>
-      </View>
-      {props.usersApi.map(user => {
-        return(
-          <View style={styles.headerBottom} key={user.id}>
+        <View key={user.id}>
+          <View style={styles.headerTop}>
             <View style={styles.headerWelcome}>
               <View >
                 <Image style={styles.headerWelcomeIcon} source={{
@@ -37,48 +26,56 @@ const Header = (props) => {
                 </Text>
               </View>
             </View>
-            <View style={styles.headerBalance}>
-              <Svg
-                width={15}
-                height={20}
-                viewBox="0 0 15 20"
-              >
-                <Path d="M14.2262 9.69048V15.8571L11.6493 16.7381L9.0723 12.624C8.82319 12.2364 8.21331 12.4567 8.28203 12.9236L9.0723 19.381L0.482422 14.9762L1.30705 10.3512C1.82244 7.41762 4.31351 5.28571 7.21688 5.28571H8.21331L13.3672 0L11.6493 5.28571H14.2262L12.869 7.37357C13.6765 7.82286 14.2262 8.68619 14.2262 9.69048Z" fill="white"/>
-              </Svg>
-              <Text style={styles.headerBalanceValue}> 
-                {user.saldo.toLocaleString()}
-              </Text>
-            </View>
           </View>
-        )
-      })}
+          <View style={styles.headerBottom}>
+            <View style={styles.headerBalance}>
+              <Text style={styles.headerBalanceText}>Saldo disponível</Text>
+              <View style={styles.headerBalanceIconValue}>
+                <Svg
+                  width={16}
+                  height={22}
+                  viewBox="0 0 16 22"
+                >
+                  <Path d="M16 11V18L13 19L10 14.33C9.71 13.89 9 14.14 9.08 14.67L10 22L0 17L0.96 11.75C1.56 8.42 4.46 6 7.84 6H9L15 0L13 6H16L14.42 8.37C15.36 8.88 16 9.86 16 11Z" fill="white"/>
+                </Svg>
+                <Text style={styles.headerBalanceValue}> 
+                  {user.saldo.toLocaleString()}
+                </Text>
+              </View>
+            </View>
+            <View>
+              <TouchableWithoutFeedback onPress={()=>props.qrCode()}>
+                <Svg
+                    width={18}
+                    height={18}
+                    viewBox="0 0 18 18"
+                  >
+                  <Path d="M0 8.25V0H8.25V8.25H0ZM1.5 6.75H6.75V1.5H1.5V6.75ZM0 18V9.75H8.25V18H0ZM1.5 16.5H6.75V11.25H1.5V16.5ZM9.75 8.25V0H18V8.25H9.75ZM11.25 6.75H16.5V1.5H11.25V6.75ZM15.95 18V15.95H18V18H15.95ZM9.75 11.825V9.75H11.8V11.825H9.75ZM11.8 13.875V11.825H13.875V13.875H11.8ZM9.75 15.95V13.875H11.8V15.95H9.75ZM11.8 18V15.95H13.875V18H11.8ZM13.875 15.95V13.875H15.95V15.95H13.875ZM13.875 11.825V9.75H15.95V11.825H13.875ZM15.95 13.875V11.825H18V13.875H15.95Z" fill="white"/>
+                </Svg>
+              </TouchableWithoutFeedback>
+            </View>
+        </View>
+      </View>
     </View>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
   header: {
-    backgroundColor: '#212B4F',
+    backgroundColor: '#232D53',
     paddingTop: 40,
     paddingRight: 20,
     paddingBottom: 20,
-    paddingLeft: 20
+    paddingLeft: 20,
+    borderBottomWidth: 3,
+    borderBottomColor: '#FE3032'
   },
-  headerTop: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 10
-  },
-  headerBottom:{
+  headerTop:{
     color: 'white',
     display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    borderBottomWidth: 1,
-    borderBottomColor: 'white',
-    paddingBottom: 15
+    paddingBottom: 30,
+    paddingTop: 30
   },
   headerWelcome:{
     display: 'flex',
@@ -95,16 +92,34 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end'
   },
   headerWelcomeName:{
-    color: 'white',
-    fontWeight: '600',
-    fontSize: 12
+    color: '#E8E8E8',
+    fontWeight: '500',
+    fontSize: 16
   },
   headerWelcomeCourse:{
+    color: '#E8E8E8',
+    fontWeight: '300',
+    fontSize: 14,
+  },
+  headerBottom:{
     color: 'white',
-    fontWeight: '500',
-    fontSize: 12,
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-end',
   },
   headerBalance:{
+    display: 'flex',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start'
+  },
+  headerBalanceText:{
+    color: '#FFFFFF',
+    fontWeight: '500',
+    fontSize: 12,
+    marginBottom: 3
+  },
+  headerBalanceIconValue:{
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'center',
@@ -115,7 +130,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '500',
     marginLeft: 7
-  }
+  },
 });
 
 export default Header

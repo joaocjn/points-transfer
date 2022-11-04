@@ -1,13 +1,15 @@
-import React from 'react';
-import { StyleSheet, View } from 'react-native';
-import { StatusBar } from 'expo-status-bar';
+import React from 'react'
+import { StyleSheet, View } from 'react-native'
+import { StatusBar } from 'expo-status-bar'
 import { createServer } from "miragejs"
-import 'intl';
-import 'intl/locale-data/jsonp/pt-BR';
+import 'intl'
+import 'intl/locale-data/jsonp/pt-BR'
 
-import Header from './components/Header';
+import Header from './components/Header'
 import Main from './components/Main'
-import Navigation from './components/Navigation';
+import Navigation from './components/Navigation'
+import ModalQrCode from './components/ModalQrCode'
+import QRCodeScan from './components/QRCodeScan'
 
 if (window.server) {
   server.shutdown()
@@ -15,6 +17,16 @@ if (window.server) {
 
 window.server = createServer({
   routes() {
+    this.get("/api/me", () => {
+      return{
+        id: 1, 
+        name: "João Cândido", 
+        image: "https://instagram.fudi1-1.fna.fbcdn.net/v/t51.2885-19/285178350_433631628596007_4104435985546135755_n.jpg?stp=dst-jpg_s150x150&_nc_ht=instagram.fudi1-1.fna.fbcdn.net&_nc_cat=103&_nc_ohc=M1LVo_5cX-0AX9XxakA&edm=AOQ1c0wBAAAA&ccb=7-5&oh=00_AT9PGocb7ziWY3sKGAQ3LzbH0CvRjGFYpgqH3VCZlLKxhg&oe=632039A9&_nc_sid=8fd12b", 
+        matricula: '2011321', 
+        curso: 'Engenharia de Software', 
+        saldo: 4000
+      }
+    })
     this.get("/api/users", () => {
       return {
         users: [
@@ -43,33 +55,77 @@ window.server = createServer({
 })
 
 const App = () => {
+  const [user, setUser] = React.useState([])
   const [users, setUsers] = React.useState([])
+  const [qrCodeDisplay, setQrCodeDisplay] = React.useState(false)
+  const [showQRCodeScan, setShowQRCodeScan] = React.useState(false)
+  const [scanData, setScanData] = React.useState()
 
+  const handleQrCodeDisplay = () => {
+    qrCodeDisplay ? setQrCodeDisplay(false) : setQrCodeDisplay(true)
+  }
+
+  const handleBarCodeScanned = ({type, data}) => {
+    setScanData(data)
+  }
+
+  const handleShowQRCodeScan = () => {
+    showQRCodeScan ? setShowQRCodeScan(false) : setShowQRCodeScan(true)
+  }
+
+  const handleClearBarCodeScanned = () => {
+    setScanData(undefined)
+  }
+
+  React.useEffect(() => {
+    fetch("/api/me")
+      .then(res => res.json())
+      .then(json => setUser(json))
+  }, [])
   React.useEffect(() => {
     fetch("/api/users")
       .then(res => res.json())
       .then(json => setUsers(json.users))
   }, [])
-
-  const user = users.filter(user => {
-    if(user.id === 1) 
-    return user
-  })
+  
   return (
+    user.length !== 0 ?
     <View style={styles.container}>
-      <Header usersApi={user}/>
-      <Main usersApi={user}/>
+      <Header userApi={user} qrCode={handleQrCodeDisplay}/>
+      {qrCodeDisplay ? 
+        <ModalQrCode 
+          userApi={user} 
+          qrCode={handleQrCodeDisplay}
+        /> 
+      : null}
+      <Main 
+        userApi={user} 
+        usersApi={users}
+        showQRCodeScan={handleShowQRCodeScan} 
+        scanData={scanData}
+        clearScanData={handleClearBarCodeScanned}
+      />
+      {showQRCodeScan ? 
+        <QRCodeScan 
+          scanData={scanData} 
+          qrCodeScan={handleBarCodeScanned}
+          clearScanData={handleClearBarCodeScanned}
+          showQRCodeScan={handleShowQRCodeScan}
+        /> 
+      : null}
       <Navigation/>
       <StatusBar style="light" />
     </View>
-  );
+    :
+    <></>
+  )
 }
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#D9D9D9',
+    backgroundColor: '#FFFFFF',
     height: '100%',
   }
-});
+})
 
 export default App

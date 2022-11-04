@@ -1,83 +1,67 @@
 import React from 'react';
-import { View, Text, StyleSheet, TextInput, Pressable, TouchableWithoutFeedback} from 'react-native';
+import { View, Text, StyleSheet, TextInput, Pressable } from 'react-native';
 import Svg, { Path } from "react-native-svg"
-import QRCode from 'react-native-qrcode-svg';
-import Ionicons from '@expo/vector-icons/Ionicons';
 
 import TransferPreview from './TransferPreview';
+import FailMessage from './FailMessage';
 
 const Main = (props) => {
+    const [userValidation, setUserValidation] = React.useState([])
     const [transferValue, setTransferValue] = React.useState([])
     const [transferUser, setTransferUser] = React.useState([])
-    const [qrCodeDisplay, setQrCodeDisplay] = React.useState(false)
-    const [buttonNext, setButtonNext] = React.useState(true)
+    const [buttonNext, setButtonNext] = React.useState(false)
+    const [userNotFoundMessage, setUserNotFoundMessage] = React.useState(false)
+
+    const user = props.userApi
+    const users = props.usersApi
+    const handleEnableButtonNext = transferValue.length !== 0 && transferUser.length === 7 ? false : true
+
+    props.scanData !== undefined && transferUser !== props.scanData ? setTransferUser(props.scanData) : null
     
     const handleTransferValue = (value) => {
         const onlyNumber = value.toString().replace(/\D+/g, '')
-        props.usersApi.map(user => {
-            if(onlyNumber > user.saldo){
-                return
-            }
-            setTransferValue(onlyNumber)
-        })
+
+        if(onlyNumber > user.saldo){
+            return
+        }
+
+        setTransferValue(onlyNumber)
     }
     const handleTransferUser = (value) => {
+        props.scanData != undefined ? props.clearScanData() : null
         const onlyNumber = value.toString().replace(/\D+/g, '')
         setTransferUser(onlyNumber)
     }
-    const handleQrCodeDisplay = () => {
-        qrCodeDisplay ? setQrCodeDisplay(false) : setQrCodeDisplay(true)
+    const handleUserNotFoundMessage = () => {
+        userNotFoundMessage ? setUserNotFoundMessage(false) : setUserNotFoundMessage(true)
     }
-
-    const handleEnableButtonNext = transferValue !== '' && transferUser.length === 7 ? false : true
     const handleButtonNext = () => {
-        buttonNext ? setButtonNext(false) : setButtonNext(true)
+        const validationUser = users.filter((user) => {
+            if(user.matricula === transferUser){
+                setUserValidation(user)
+                return true
+            }
+        })
+       
+        if(validationUser[0] !== undefined){
+            buttonNext ? setButtonNext(false) : setButtonNext(true)
+        }else{
+            handleUserNotFoundMessage()
+        }
     }
-
     return (
-        <View style={styles.main}>
-            {props.usersApi.map(user => {
-                return(
-                    <View style={styles.mainTop} key={user.id}>
-                        <Text style={styles.mainTopText}> 
-                            {`${user.name}, seu \nsaldo atual é:`}
-                        </Text>
-                        <View style={styles.mainBalance}>
-                            <Svg
-                                width={27}
-                                height={35}
-                                viewBox="0 0 27 35"
-                            >
-                                <Path d="M27 17.5V28.6364L21.9375 30.2273L16.875 22.7977C16.3856 22.0977 15.1875 22.4955 15.3225 23.3386L16.875 35L0 27.0455L1.62 18.6932C2.6325 13.3955 7.52625 9.54545 13.23 9.54545H15.1875L25.3125 0L21.9375 9.54545H27L24.3337 13.3159C25.92 14.1273 27 15.6864 27 17.5Z" fill="#4B4B4C"/>
-                            </Svg>
-                            <Text style={styles.mainBalanceValue}> 
-                                {user.saldo.toLocaleString('pt-BR')}
-                            </Text>
-                        </View>
-                    </View>
-                )
-            })}
-            {buttonNext ?
-            <View style={styles.mainBottom}>
-                <Text style={styles.mainTransferText}>
-                    Qual é o valor da transferência?
+        <View style={styles.mainAbc}>
+            <View style={styles.main}>
+                <Text style={[styles.mainTransferText, {marginTop: 10}]}>
+                    Quantidade de pontos?
                 </Text>
                 <View>
-                    <Svg
-                        width={14}
-                        height={20}
-                        viewBox="0 0 14 20"
-                        style={styles.mainTransferValueIcon}
-                    >
-                        <Path d="M13.7438 9.69048V15.8571L11.1668 16.7381L8.58987 12.624C8.34077 12.2364 7.73089 12.4567 7.79961 12.9236L8.58987 19.381L0 14.9762L0.824628 10.3512C1.34002 7.41762 3.83108 5.28571 6.73446 5.28571H7.73089L12.8848 0L11.1668 5.28571H13.7438L12.3866 7.37357C13.194 7.82286 13.7438 8.68619 13.7438 9.69048Z" fill="#7E7E7E" fill-opacity="0.51"/>
-                    </Svg>
                     <TextInput
-                        style={styles.mainTransferValueInput}
+                        style={styles.mainTransferInput}
                         onChangeText={handleTransferValue}
                         value={transferValue}
                         keyboardType='number-pad'
                         selectionColor='#4B4B4C'
-                        
                     />
                 </View>
                 
@@ -89,163 +73,122 @@ const Main = (props) => {
                 </Text>
                 <View style={styles.mainInputBottom}>
                     <TextInput
-                        style={styles.mainTransferUserInput}
+                        style={styles.mainTransferInput}
                         onChangeText={handleTransferUser}
                         value={transferUser}
                         maxLength={7}
                         keyboardType='number-pad'
                         selectionColor='#4B4B4C'
                     />
-                    
-                    <Ionicons name="qr-code-outline" size={25} color="#323F6E" onPress={()=>handleQrCodeDisplay()}/>
                 </View>
-                {qrCodeDisplay ? <View style={styles.mainTransferQRCode}>
-                    <TouchableWithoutFeedback onPress={()=>handleQrCodeDisplay()}>
-                        <View style={styles.mainTransferQRCodeDefocus}></View>
-                    </TouchableWithoutFeedback>
-                    
-                    <QRCode 
-                        value={props.usersApi.map(user => {return user.matricula})}
-                        size={200} 
-                        color="black" 
-                        backgroundColor="white" 
-                        logoSize={30} 
-                        logoMargin={2} 
-                        logoBorderRadius={15} 
-                        logoBackgroundColor="yellow" 
-                    /> 
-                </View> : null}
-                <Pressable 
-                    style={styles.mainTransferButton} 
+                <Pressable
+                    onPress={()=> {
+                        props.showQRCodeScan()
+                        props.clearScanData()
+                    }}
+                    style={styles.mainQRCodeScanButton}
+                >
+                    <Text style={styles.mainQRCodeScanButtonText}>
+                        Escanear QR Code
+                    </Text>
+                    <Svg
+                            width={18}
+                            height={18}
+                            viewBox="0 0 18 18"
+                            >
+                            <Path d="M0 8.25V0H8.25V8.25H0ZM1.5 6.75H6.75V1.5H1.5V6.75ZM0 18V9.75H8.25V18H0ZM1.5 16.5H6.75V11.25H1.5V16.5ZM9.75 8.25V0H18V8.25H9.75ZM11.25 6.75H16.5V1.5H11.25V6.75ZM15.95 18V15.95H18V18H15.95ZM9.75 11.825V9.75H11.8V11.825H9.75ZM11.8 13.875V11.825H13.875V13.875H11.8ZM9.75 15.95V13.875H11.8V15.95H9.75ZM11.8 18V15.95H13.875V18H11.8ZM13.875 15.95V13.875H15.95V15.95H13.875ZM13.875 11.825V9.75H15.95V11.825H13.875ZM15.95 13.875V11.825H18V13.875H15.95Z" fill="white"/>
+                    </Svg>
+                </Pressable>
+                <Pressable
                     onPress={()=>handleButtonNext()}
                     disabled={handleEnableButtonNext}
+                    style={[styles.mainTransferButton, {
+                        backgroundColor: handleEnableButtonNext ? '#7E7E7E' : '#17A7E0'
+                    }]}
                 >
-                    <Text style={[styles.mainTransferButtonText, {
-                        backgroundColor: handleEnableButtonNext ? '#7E7E7E' : '#212B4F'
-                    }]}>Próximo</Text>
+                    <Text style={styles.mainTransferButtonText}>Enviar</Text>
                 </Pressable>
+                {userNotFoundMessage ?
+                <FailMessage
+                    message="Usuário não encontrado em nossa base de dados."
+                    visible={handleUserNotFoundMessage}
+                /> : null
+                }
+                {buttonNext ?
+                <TransferPreview 
+                    visible={handleButtonNext}
+                    userApi={userValidation} 
+                    transferValue={transferValue}
+                    transferUser={transferUser}
+                /> : null}
             </View> 
-            : 
-            <TransferPreview 
-                visible={handleButtonNext}
-                usersApi={props.usersApi} 
-                transferValue={transferValue}
-                transferUser={transferUser}
-            />}
         </View>
     )
 }
 
 const styles = StyleSheet.create({
-    mainTop:{
-        display: 'flex',
-        flexDirection: 'row',
-        alignItems: 'center',
+    main:{
         backgroundColor: '#FFFFFF',
-        margin: 20,
         padding: 20,
-        borderRadius: 10
-    },
-    mainTopText:{
-        color: '#4B4B4C',
-        fontWeight: '500',
-        fontSize: 24,
-    },
-    mainBalance:{
-        display: 'flex',
-        flexDirection: 'row',
-        alignItems: 'center'
-    },
-    mainBalanceValue:{
-        color: '#4B4B4C',
-        fontSize: 24,
-        fontWeight: '500',
-        marginLeft: 7
-    },
-    mainBottom:{
-        backgroundColor: '#FFFFFF',
-        margin: 20,
-        marginTop: 0,
-        padding: 20,
-        borderRadius: 10,
+        height: '100%'
     },
     mainTransferText:{
-        fontSize: 18,
+        fontSize: 16,
         fontWeight: '400',
-        color: '#000000'
+        color: '#353535'
     },
     mainTransferSubText:{
-        fontSize: 10,
-        fontWeight: '400',
-        color: '#6F6F70',
+        fontSize: 12,
+        fontWeight: '300',
+        color: '#979797',
+        marginTop: 5,
+    },
+    mainTransferInput:{
+        width: '100%',
+        height: 48,
+        borderRadius: 4,
+        borderWidth: 1,
+        borderColor: '#868686',
+        backgroundColor: '#FFFFFF',
         marginTop: 10,
+        marginBottom: 30,
+        paddingLeft: 15,
     },
-    mainTransferValueInput:{
-        width: 180,
-        height: 35,
-        borderRadius: 5,
-        backgroundColor: '#D9D9D9',
-        marginTop: 10,
-        marginBottom: 20,
-        paddingLeft: 32,
-        shadowColor: 'rgba(0, 0, 0, 0.8)',
-        elevation: 9,
-    },
-    mainTransferValueIcon:{
-        position: 'absolute',
-        top: 17,
-        left: 10,
-        zIndex: 1
-    },
-    mainInputBottom:{
+    mainQRCodeScanButton:{
+        backgroundColor:  '#17A7E0',
+        width: '100%',
+        marginBottom: 30,
+        height: 48,
+        borderRadius: 4,
         display: 'flex',
         flexDirection: 'row',
-        alignItems: 'center',
-    },
-    mainTransferUserInput:{
-        width: 180,
-        height: 35,
-        borderRadius: 5,
-        backgroundColor: '#D9D9D9',
-        marginTop: 5,
-        marginRight: 5,
-        paddingLeft: 9,
-        shadowColor: 'rgba(0, 0, 0, 0.8)',
-        elevation: 9
-    },
-    mainTransferQRCodeDefocus:{
-        position: 'absolute',
-        width: '100%',
-        height: '100%',
-        borderRadius: 10,
-        backgroundColor: 'rgba(255,255,255,0.5)'
-    },
-    mainTransferQRCode:{
-        position: 'absolute',
-        top: 0,
-        bottom: 0,
-        left: 0,
-        right: 0,
-        display: 'flex',
-        alignItems: 'center',
         justifyContent: 'center',
-        zIndex: 2,
+        alignItems: 'center'
+    },
+    mainQRCodeScanButtonText:{
+        color: '#FFFFFF',
+        fontSize: 16,
+        fontWeight: '500',
+        marginRight: 10
     },
     mainTransferButton:{
+        color: '#FFFFFF',
+        width: '100%',
+        height: 48,
+        textAlign: 'center',
+        borderRadius: 4,
+        fontSize: 16,
+        fontWeight: '500',
         display: 'flex',
-        alignItems: 'flex-end',
-        marginTop: 20,
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center'
     },
     mainTransferButtonText:{
         color: '#FFFFFF',
-        width: 100,
-        textAlign: 'center',
-        paddingVertical: 5,
-        borderRadius: 5,
-        fontSize: 12,
+        fontSize: 16,
         fontWeight: '500'
     }
-    
 })
 
 export default Main
